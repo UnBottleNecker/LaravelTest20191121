@@ -1,10 +1,10 @@
-name: Laravel
+name: Laravel_Test_And_Deploy
 
 on: [push]
 
 jobs:
   laravel-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v1
     - name: Copy .env
@@ -22,4 +22,13 @@ jobs:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
       run: vendor/bin/phpunit
-      
+    - name: add permission
+      run: chmod -R g+w api && sudo groupadd -f daemon && sudo chown -R :daemon api
+    - name: ssh key generate
+      run: echo "$SSH_PRIVATE_KEY" ＞ key && chmod 600 key
+      env:
+         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+    - name: rsync deploy
+      run: rsync -rptgDvz --delete --exclude-from=./.rsyncignore -e "ssh -i key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" ./ bitnami@13.231.31.143:/home/bitnami/htdocs/laravel/
+    - name: migrate database
+      run: ssh -i key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no bitnami@13.231.31.143 'cd /home/bitnami/htdocs/laravel/ && php artisan migrate'      
