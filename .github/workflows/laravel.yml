@@ -25,10 +25,12 @@ jobs:
     - name: add permission
       run: chmod -R g+w ./ && sudo groupadd -f daemon && sudo chown -R :daemon ./
     - name: rsync deploy
-      run: rsync -rptgDvz --delete --exclude-from=./.rsyncignore -e "ssh -i $SSH_PRIVATE_KEY -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" ./ bitnami@13.231.31.143:/home/bitnami/htdocs/laravel/
+      run: rsync -rptgDvz --delete --exclude-from=./.rsyncignore -e "ssh -i $SSH_PRIVATE_KEY -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" ./ $SSH_CONNECT_TO :/home/bitnami/htdocs/laravel/
       env:
+         SSH_CONNECT_TO: ${{ secrets.SSH_CONNECT_TO }} 
          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: migrate database
-      run: ssh -i $SSH_PRIVATE_KEY -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no bitnami@13.231.31.143 'cd /home/bitnami/htdocs/laravel/ && php artisan migrate'      
+      run: ssh -i $SSH_PRIVATE_KEY -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $SSH_CONNECT_TO 'cd /home/bitnami/htdocs/laravel/ && php artisan migrate'      
       env:
+         SSH_CONNECT_TO: ${{ secrets.SSH_CONNECT_TO }} 
          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
