@@ -24,7 +24,7 @@
     "config": {
         "platform": {
             "php": "7.1.28"
-        }
+        },
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true
