@@ -25,7 +25,7 @@ jobs:
     - name: add permission
       run: chmod -R g+w ./ && sudo groupadd -f daemon && sudo chown -R :daemon ./
     - name: rsync deploy
-      run: rsync -rptgDvz --delete --exclude-from=./.rsyncignore -e "ssh -i $SSH_PRIVATE_KEY -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" ./ $SSH_CONNECT_TO :/home/bitnami/htdocs/laravel/
+      run: rsync -rptgDvz --exclude-from=./.env -e "ssh -i $SSH_PRIVATE_KEY -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" ./ $SSH_CONNECT_TO :/home/bitnami/htdocs/laravel
       env:
          SSH_CONNECT_TO: ${{ secrets.SSH_CONNECT_TO }} 
          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
