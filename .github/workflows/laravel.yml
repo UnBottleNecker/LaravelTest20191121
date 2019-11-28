@@ -24,13 +24,17 @@ jobs:
       run: vendor/bin/phpunit
     - name: add permission
       run: chmod -R g+w ./ && sudo groupadd -f daemon && sudo chown -R :daemon ./
+    - name: Install SSH key
+      uses: shimataro/ssh-key-action@v1
+      with:
+        private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        public-key: ${{ secrets.SSH_PUBLIC_KEY }}
+        name: id_rsa # optional
     - name: rsync deploy
-      run: rsync -rptgDvz --exclude-from=./.env -e "ssh -i $SSH_PRIVATE_KEY -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" ./ $SSH_CONNECT_TO :/home/bitnami/htdocs/laravel
+      run: rsync -rptgDvz --delete --exclude-from=./.env -e "ssh -i id_rsa -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" ./ $SSH_CONNECT_PATH
       env:
-         SSH_CONNECT_TO: ${{ secrets.SSH_CONNECT_TO }} 
-         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+         SSH_CONNECT_PATH: ${{ secrets.SSH_CONNECT_PATH }}
     - name: migrate database
-      run: ssh -i $SSH_PRIVATE_KEY -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $SSH_CONNECT_TO 'cd /home/bitnami/htdocs/laravel/ && php artisan migrate'      
+      run: ssh -i id_rsa -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $SSH_CONNECT_TO 'cd /home/bitnami/htdocs/laravel/ && php artisan migrate'      
       env:
          SSH_CONNECT_TO: ${{ secrets.SSH_CONNECT_TO }} 
-         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
