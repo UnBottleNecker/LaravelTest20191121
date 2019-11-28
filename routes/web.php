@@ -11,11 +11,11 @@
 |
 */
 
-//Route::get('/', function () {
-//    return view('welcome');
-//});
+Route::get('/', function () {
+    return view('welcome');
+});
 
-Route::get('/', 'ReservationController@index');
+Route::get('/top', 'ReservationController@index');
 Route::get('create', 'ReservationController@create');
 Route::post('create', 'ReservationController@store');
 Route::get('edit/{id}', 'ReservationController@edit');
