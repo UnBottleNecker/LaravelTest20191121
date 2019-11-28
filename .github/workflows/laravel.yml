@@ -23,7 +23,7 @@ jobs:
         DB_DATABASE: database/database.sqlite
       run: vendor/bin/phpunit
     - name: add permission
-      run: chmod -R g+w api && sudo groupadd -f daemon && sudo chown -R :daemon api
+      run: chmod -R g+w ./ && sudo groupadd -f daemon && sudo chown -R :daemon ./
     - name: ssh key generate
       run: echo "$SSH_PRIVATE_KEY" ＞ key && chmod 600 key
       env:
