@@ -24,11 +24,11 @@ jobs:
       run: vendor/bin/phpunit
     - name: add permission
       run: chmod -R g+w ./ && sudo groupadd -f daemon && sudo chown -R :daemon ./
-    - name: ssh key generate
-      run: echo "$SSH_PRIVATE_KEY" ＞ key && chmod 600 key
+    - name: rsync deploy
+      run: rsync -rptgDvz --delete --exclude-from=./.rsyncignore -e "ssh -i $SSH_PRIVATE_KEY -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" ./ bitnami@13.231.31.143:/home/bitnami/htdocs/laravel/
       env:
          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-    - name: rsync deploy
-      run: rsync -rptgDvz --delete --exclude-from=./.rsyncignore -e "ssh -i key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" ./ bitnami@13.231.31.143:/home/bitnami/htdocs/laravel/
     - name: migrate database
-      run: ssh -i key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no bitnami@13.231.31.143 'cd /home/bitnami/htdocs/laravel/ && php artisan migrate'      
+      run: ssh -i $SSH_PRIVATE_KEY -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no bitnami@13.231.31.143 'cd /home/bitnami/htdocs/laravel/ && php artisan migrate'      
+      env:
+         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
