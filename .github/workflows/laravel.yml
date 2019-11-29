@@ -31,7 +31,7 @@ jobs:
         public-key: ${{ secrets.SSH_PUBLIC_KEY }}
         name: id_rsa # optional
     - name: rsync deploy
-      run: rsync -rptgDvz --delete --exclude=.env -e "ssh -i ./id_rsa.pub -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" $SSH_CONNECT_TO ./ $SSH_CONNECT_PATH
+      run: rsync -rptgDvz --delete --exclude=.env -e "ssh -i ./id_rsa.pub -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" ./ $SSH_CONNECT_PATH
       env:
          SSH_CONNECT_TO: ${{ secrets.SSH_CONNECT_TO }}
          SSH_CONNECT_PATH: ${{ secrets.SSH_CONNECT_PATH }}
